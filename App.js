@@ -1,17 +1,23 @@
 import React, {useState, useEffect} from 'react';
-import {Image, View, TouchableOpacity, Text} from 'react-native';
+import {Image, View, TouchableOpacity, Text, TextInput, KeyboardAvoidingView} from 'react-native';
 var Sound = require('react-native-sound');
 import alertSong from './assets/endAlert.mp3'
 
 export default function App(){
 
-  const focusTime = 0.1 * 60 * 1000;
-  const breakTime = 0.1 * 60 * 1000;
+  const [focusMinutes, setFocusMinutes] = useState('')
+  const [breakMinutes, setbreakMinutes] = useState('')
+
+  const focusIsEmpty = focusMinutes === '' ? 25 : Number(focusMinutes)
+  const breakIsEmpty = breakMinutes === '' ? 5 : Number(breakMinutes)
+  const focusTime = focusIsEmpty * 60 * 1000;
+  const breakTime = breakIsEmpty * 60 * 1000;
 
   const [timer, setTimer] = useState(focusTime)
   const [handleStart, setHandleStart] = useState(false)
   const [timerMode, setTimerMode] = useState('Focus')
   const [isRunning, setIsRunning] = useState(null)
+  const [pomodoroCount, setPomodoroCount] = useState(0)
 
   Sound.setCategory('Alarm');
 
@@ -31,6 +37,7 @@ export default function App(){
       }, 50)
 
       if(timerMode === 'Focus'){
+        setPomodoroCount(pomodoroCount + 1)
         setTimerMode('Break')
         setTimer(breakTime)
       }else{
@@ -40,7 +47,7 @@ export default function App(){
       }
       timerStop()
     }
-  }, [timer])
+  }, [timer, focusMinutes, breakMinutes])
 
   function timerStart(){
     const res = setInterval(() => setTimer(prev => prev - 1000), 1000)
@@ -59,24 +66,50 @@ export default function App(){
     setTimerMode('Focus')
   }
 
+  function applyChanges(){
+      if(focusMinutes === ''){
+        return
+      }else{
+        timerStop()
+        setTimer(focusTime)
+        setTimerMode('Focus')
+      }
+  }
+
   const timerDate = new Date(timer)
   
   return(
-    <View style={{flex: 1, alignItems: 'center', backgroundColor: '#642d8a'}}>
-      <Image source={require('./assets/logoimg.png')} style={{ width: 250, height: 250 }} resizeMode="cover"/>
+    <KeyboardAvoidingView style={{flex: 1, alignItems: 'center', backgroundColor: '#642d8a', justifyContent: 'center', width: '100%', height: '100%'}} behavior= 'position' keyboardVerticalOffset={28}>
+      <Image source={require('./assets/logoimg.png')} style={{ width: 250, height: 250, alignSelf: 'center' }} resizeMode="cover"/>
+      {pomodoroCount >= 4 ? <Text style={{alignSelf: 'center'}}>Você já fez 4 sessões, hora de descansar</Text> : <></>}
       <Text style={{fontSize: 30, textAlign: 'center', color: timerMode === 'Focus' ? '#cb0e00' : '#49b8a5'}}>{timerMode === 'Focus' ? 'Hora de focar!!!' : 'Hora do descanso!!!'}</Text>
-      <View style={{backgroundColor: timerMode === 'Focus' ? '#cb0e00' : '#49b8a5', width: '40%', height: '20%', borderRadius: 100, justifyContent: 'center', alignItems: 'center'}}>
+      <View style={{backgroundColor: timerMode === 'Focus' ? '#cb0e00' : '#49b8a5', width: 150, height: '20%', borderRadius: 100, justifyContent: 'center', alignItems: 'center', alignSelf: 'center'}}>
         <Text style={{fontSize: 30, fontWeight: 700}}>{timerDate.getMinutes().toString().padStart(2, "0")}:{timerDate.getSeconds().toString().padStart(2, "0")}</Text>
       </View>
-      <TouchableOpacity disabled={handleStart} onPress={timerStart} style={{backgroundColor: '#6495ED', borderRadius: 5, marginTop: 40, height: 40, width: 150, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={{color: '#214C9B', fontWeight: 700}}>Iniciar</Text>
+      <TouchableOpacity onPress={handleStart === true ? timerStop : timerStart} style={{backgroundColor: '#6495ED', alignSelf: 'center', borderRadius: 5, marginTop: 20, height: 40, width: 150, justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={{color: '#214C9B', fontWeight: 700}}>{handleStart === true ? 'Pausar' : 'Iniciar'}</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={timerStop} style={{backgroundColor: '#6495ED', borderRadius: 5, marginTop: 20, height: 40, width: 150, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={{color: '#214C9B', fontWeight: 700}}>Parar</Text>
+      <View style={{flexDirection: 'row', gap: 10, padding: 10}}>
+        <TextInput style={{alignSelf: 'center', height: '100%', textAlignVertical: 'center', textAlign: 'center', backgroundColor: '#000', opacity: 0.8, borderRadius: 5}}
+          placeholderTextColor="#969696"
+          placeholder="Tempo do pomodoro"
+          keyboardType='numeric'
+          color= '#fff'
+          onChangeText={value => setFocusMinutes(value)}/>
+        <TextInput style={{alignSelf: 'center', height: '100%', textAlignVertical: 'center', textAlign: 'center', backgroundColor: '#000', opacity: 0.8, borderRadius: 5}}
+          placeholderTextColor="#969696"
+          placeholder="Tempo da pausa"
+          keyboardType='numeric'
+          color= '#fff'
+          onChangeText={value => setbreakMinutes(value)}/>
+      </View>
+      <TouchableOpacity onPress={applyChanges} style={{backgroundColor: '#6495ED', alignSelf: 'center', borderRadius: 5, height: 40, width: 150, justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={{color: '#214C9B', fontWeight: 700}}>Aplicar</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={timerReset} style={{backgroundColor: '#6495ED', borderRadius: 5, marginTop: 20, height: 40, width: 150, justifyContent: 'center', alignItems: 'center'}}>
+      <TouchableOpacity onPress={timerReset} style={{backgroundColor: '#6495ED', alignSelf: 'center', borderRadius: 5, marginTop: 20, height: 40, width: 150, justifyContent: 'center', alignItems: 'center'}}>
         <Text style={{color: '#214C9B', fontWeight: 700}}>Resetar</Text>
       </TouchableOpacity>
-    </View>
+      <Text style={{alignSelf: 'center', paddingTop: 10, fontSize: 18}}>Quantidade de sessões concluídas: {pomodoroCount}</Text>
+    </KeyboardAvoidingView>
   )
 }
