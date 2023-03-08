@@ -36,6 +36,12 @@ export default function App(){
     setHandleStart(false)
   }
 
+  function timerReset(){
+    timerStop()
+    setTimer(focusTime)
+    setTimerMode('Focus')
+  }
+
   const timerDate = new Date(timer)
   
   return(
@@ -50,6 +56,9 @@ export default function App(){
       </TouchableOpacity>
       <TouchableOpacity onPress={timerStop} style={{backgroundColor: '#6495ED', borderRadius: 5, marginTop: 20, height: 40, width: 150, justifyContent: 'center', alignItems: 'center'}}>
         <Text style={{color: '#214C9B', fontWeight: 700}}>Parar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={timerReset} style={{backgroundColor: '#6495ED', borderRadius: 5, marginTop: 20, height: 40, width: 150, justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={{color: '#214C9B', fontWeight: 700}}>Resetar</Text>
       </TouchableOpacity>
     </View>
   )
