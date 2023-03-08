@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {Image, View, TouchableOpacity, Text} from 'react-native';
+var Sound = require('react-native-sound');
+import alertSong from './assets/endAlert.mp3'
 
 export default function App(){
 
-  const focusTime = 0.2 * 60 * 1000;
+  const focusTime = 0.1 * 60 * 1000;
   const breakTime = 0.1 * 60 * 1000;
 
   const [timer, setTimer] = useState(focusTime)
@@ -11,13 +13,28 @@ export default function App(){
   const [timerMode, setTimerMode] = useState('Focus')
   const [isRunning, setIsRunning] = useState(null)
 
+  Sound.setCategory('Alarm');
+
+  const sound = new Sound(alertSong, Sound.MAIN_BUNDLE, error => {
+    if (error) {
+      console.log('Erro ao carregar o arquivo de som', error);
+      return;
+    }
+  });
 
   useEffect(() => {
     if(timer === 0){
+
+      setTimeout(() => {
+        sound.setVolume(0.1)
+        sound.play()
+      }, 50)
+
       if(timerMode === 'Focus'){
         setTimerMode('Break')
         setTimer(breakTime)
       }else{
+        sound.play()
         setTimerMode('Focus')
         setTimer(focusTime)
       }
