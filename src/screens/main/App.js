@@ -88,7 +88,7 @@ export default function App(){
     if(timer === 0){
 
       setTimeout(() => {
-        sound.setVolume(0.1)
+        sound.setVolume(0.5)
         sound.play()
       }, 100)
 
