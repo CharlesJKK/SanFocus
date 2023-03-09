@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './styles';
 var Sound = require('react-native-sound');
 import alertSong from '../../../assets/endAlert.mp3'
+import { LocalNotification } from '../../services/LocalPushControllers';
 
 export default function App(){
 
@@ -56,6 +57,7 @@ export default function App(){
     const res = setInterval(() => setTimer(prev => prev - 1000), 1000)
     setIsRunning(res)
     setHandleStart(true)
+    LocalNotification(`${timerDate.getMinutes().toString().padStart(2, "0")}:${timerDate.getSeconds().toString().padStart(2, "0")}`)
   }
 
   function timerStop(){
