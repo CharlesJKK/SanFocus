@@ -13,7 +13,7 @@ As tecnologias utilizadas nesse projeto foram:
 * Google firebase Messaging
 * react-native-push-notification
 
-## Vercionamento feito com:
+## Versionamento feito com:
 
 * Github
 
