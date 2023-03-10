@@ -1,4 +1,4 @@
-## MoneyValue
+## sanFocus
 Um aplicativo simples para utilizar-se da técnica de pomodoro, sendo possível alterar o tempo do pomodoro e de descanso
 além de ter um alerta ao terminar cada sessão, ter um contador de sessões e receber uma notificação ao iniciar o timer.
 
